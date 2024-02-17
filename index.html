@@ -1,0 +1,55 @@
+<html>
+    <h1>ETH tx invoker. Simple tool: just connect wallet & send</h1>
+
+    <div style={margin:10px}>
+        <br>
+
+        <span style="">To:&nbsp;</span><input id='to' type='text' value='' placeholder='0x...'/>
+
+        <br>
+        <br>
+
+        <span style="">Data:&nbsp;</span><input id='data' type='text' value='' placeholder='0x...'/>
+
+        <br>
+        <br>
+
+        <span style="">Value:&nbsp;</span><input id='value' type='text' value='0'/>
+
+        <br>
+        <br>
+
+        <button onclick="connectAndSend()" id="connect_and_send">Connect wallet</button>
+    </div>
+
+    <script>
+
+        async function connectAndSend() {
+            if (!window.connectedAdress) {
+                if (window.ethereum) {
+                    const [walletAddress] = await window.ethereum.request({method: "eth_requestAccounts"});
+                    // Get the current MetaMask selected/active wallet
+                    console.log(`Wallet: ${walletAddress}`);
+                    window.connectedAdress = walletAddress
+                    document.getElementById("connect_and_send").innerHTML = 'Send!'
+                } else {
+                    alert("No wallet or wallet not compatible");
+                }
+            } else {
+                const [walletAddress] = await window.ethereum.request({method: "eth_requestAccounts"});
+                await window.ethereum.request({
+                  "method": "eth_sendTransaction",
+                  "params": [
+                    {
+                        from: walletAddress,
+                        to: document.getElementById("to").value,
+                        data: document.getElementById("data").value,
+                        value: `0x${Number(document.getElementById("value").value).toString(16)}`,
+                    }
+                  ]
+                });
+            }
+        }
+        </script>
+
+</html>
